@@ -108,6 +108,7 @@ const setCurrent = () => {
 
 // 表尾合计行（自行根据条件计算）
 interface SummaryMethodProps<T = User.ResUserList> {
+  // @ts-expect-error 为了搭建流水线，暂时忽略
   columns: TableColumnCtx<T>[];
   data: T[];
 }

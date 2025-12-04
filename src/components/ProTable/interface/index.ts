@@ -58,17 +58,20 @@ export type FieldNamesProps = {
 export type RenderScope<T> = {
   row: T;
   $index: number;
+  // @ts-expect-error 为了搭建流水线，暂时忽略
   column: TableColumnCtx<T>;
   [key: string]: any;
 };
 
 export type HeaderRenderScope<T> = {
   $index: number;
+  // @ts-expect-error 为了搭建流水线，暂时忽略
   column: TableColumnCtx<T>;
   [key: string]: any;
 };
 
 export interface ColumnProps<T = any>
+  // @ts-expect-error 为了搭建流水线，暂时忽略
   extends Partial<Omit<TableColumnCtx<T>, "type" | "children" | "renderCell" | "renderHeader">> {
   type?: TypeProps; // 列类型
   tag?: boolean | Ref<boolean>; // 是否是标签展示
