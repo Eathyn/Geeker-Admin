@@ -87,7 +87,7 @@ async function sendWeComNotification(success, fileCount) {
   const statusText = success ? "部署成功" : "部署失败";
 
   // Markdown 消息模版
-  const content = {
+  const message = {
     msgtype: "markdown",
     markdown: {
       content: `### 🚀 前端部署通知
@@ -101,10 +101,10 @@ async function sendWeComNotification(success, fileCount) {
   };
 
   try {
-    await axios.post(webhookUrl, content);
+    await axios.post(webhookUrl, message, { proxy: false });
     console.log(chalk.green("📢 企业微信通知发送成功"));
   } catch (e) {
-    console.error(chalk.red("❌ 企业微信通知发送失败"), e.message);
+    console.error(chalk.red("❌ 企业微信通知发送失败"), e);
   }
 }
 
