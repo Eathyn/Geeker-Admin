@@ -108,8 +108,20 @@
     "vite-plugin-vue-devtools": "^7.3.5",
     "vue-tsc": "^2.0.22"
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.24.0",
+      "onFail": "error"
+    }
+  },
   "engines": {
-    "node": ">=16.18.0"
+    "node": "24.11.1",
+    "pnpm": "10.24.0"
   },
   "packageManager": "pnpm@10.24.0",
   "browserslist": {
