@@ -1,0 +1,21 @@
+# gitleaks.toml
+title = "Geeker-Admin Security Config"
+
+[allowlist]
+description = "全局白名单"
+paths = [
+    '''node_modules/''',
+    '''pnpm-lock\.yaml''',      # 使用 \. 转义点号
+    '''package-lock\.json''',
+    '''dist/''',                # 匹配包含 dist/ 的路径
+    '''public/''',
+    '''src/assets/json/''',
+    '''\.svg$'''                # 匹配以 .svg 结尾的文件 ($ 表示行尾)
+]
+
+# 手机号检测规则 (保持不变)
+[[rules]]
+id = "mobile-phone-cn"
+description = "Detected a potential Chinese mobile phone number"
+regex = '''\b1[3-9]\d{9}\b'''
+tags = ["mobile", "pii"]

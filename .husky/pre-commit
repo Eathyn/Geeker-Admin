@@ -1,1 +1,42 @@
+# ---------------------------------------------------
+# 1. 代码格式化与检查 (Lint-Staged)
+# ---------------------------------------------------
+
+echo "正在执行 lint-staged..."
 pnpm run lint:lint-staged
+
+# 如果 lint-staged 返回非 0 (代表有错)，则脚本直接退出，不再往下执行
+if [ $? -ne 0 ]; then
+    echo "❌ lint-staged 检测到错误，取消 Commit"
+    exit 1
+fi
+
+# ---------------------------------------------------
+# 2. 敏感信息检测 (使用 Docker 运行 Gitleaks)
+# ---------------------------------------------------
+
+# 检查 Docker 是否运行
+if ! docker info > /dev/null 2>&1; then
+  echo "❌ 没有运行 Docker，需要启动 Docker 才能执行 Gitleaks 检测"
+  exit 1
+fi
+
+echo "🛡️ 正在使用 Docker 运行 Gitleaks 检查是否存在敏感信息..."
+
+# Windows 下的特殊处理：
+# 1. 使用 MSYS_NO_PATHCONV=1 防止 Git Bash 自动转换路径导致 Docker 挂载失败
+# 2. 去掉 -t 参数 (TTY)，避免在某些 Windows 终端下报错 "the input device is not a TTY"
+
+MSYS_NO_PATHCONV=1 docker run --rm \
+  -v "$(pwd):/code" \
+  zricethezav/gitleaks:latest \
+  detect \
+  --source="/code" \
+  --config="/code/gitleaks.toml" \
+  --no-git \
+  -v
+
+if [ $? -ne 0 ]; then
+    echo "❌ 检测到敏感信息，取消 Commit"
+    exit 1
+fi
