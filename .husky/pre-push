@@ -1,1 +1,21 @@
+# 1. 安全检查 (使用官方源以避免报错)
+echo "🛡️ 正在执行依赖包的安全性检查..."
 pnpm audit --audit-level high --registry=https://registry.npmjs.org
+
+# 检查上一步的退出码，如果失败直接退出，成功则跑下面的
+if [ $? -ne 0 ]; then
+ echo "❌ 检查到依赖出现高危安全漏洞!"
+ exit 1
+fi
+
+# 2. TypeScript 类型检查
+echo "正在执行 TypeScript 类型检查..."
+pnpm run type:check
+
+# 同样检查退出码
+if [ $? -ne 0 ]; then
+ echo "❌ 检查到 TypeScript 类型错误"
+ exit 1
+fi
+
+echo "✅ 通过所有检查，正在推送到远程仓库..."
