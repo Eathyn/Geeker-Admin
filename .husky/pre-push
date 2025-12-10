@@ -1,0 +1,1 @@
+pnpm audit --audit-level high --registry=https://registry.npmjs.org
