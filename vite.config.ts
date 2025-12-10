@@ -33,7 +33,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@import "@/styles/var.scss";`
+          additionalData: `@import "@/styles/var.scss";`,
+          // 使用现代编译器 API，解决 legacy-js-api 警告
+          api: "modern-compiler",
+          // 忽略特定的废弃警告，解决刷屏问题
+          silenceDeprecations: ["legacy-js-api", "import"]
         }
       }
     },
