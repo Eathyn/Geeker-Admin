@@ -124,6 +124,13 @@
     "pnpm": "10.24.0"
   },
   "packageManager": "pnpm@10.24.0",
+  "pnpm": {
+    "auditConfig": {
+      "ignoreCves": [
+        "CVE-2024-4068"
+      ]
+    }
+  },
   "browserslist": {
     "production": [
       "> 1%",
