@@ -22,6 +22,7 @@ module.exports = {
     "color-hex-length": "long", // 指定 16 进制颜色的简写或扩写 "short(16进制简写)"|"long(16进制扩写)"
     "rule-empty-line-before": "never", // 要求或禁止在规则之前的空行 "always(规则之前必须始终有一个空行)"|"never(规则前绝不能有空行)"|"always-multi-line(多行规则之前必须始终有一个空行)"|"never-multi-line(多行规则之前绝不能有空行)"
     "font-family-no-missing-generic-family-keyword": null, // 禁止在字体族名称列表中缺少通用字体族关键字
+    "scss/load-partial-extension": null,  // 核心修复：禁用新版规则，允许 @import "./index.scss" 写法
     "scss/at-import-partial-extension": null, // 解决不能使用 @import 引入 scss 文件
     "property-no-unknown": null, // 禁止未知的属性
     "no-empty-source": null, // 禁止空源码
