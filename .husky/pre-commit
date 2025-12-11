@@ -16,12 +16,27 @@ fi
 # ---------------------------------------------------
 
 # 检查 Docker 是否运行
+echo "正在检查 Docker 是否开启..."
 if ! docker info > /dev/null 2>&1; then
   echo "❌ 没有运行 Docker，需要启动 Docker 才能执行 Gitleaks 检测"
   exit 1
 fi
 
-echo "🛡️ 正在使用 Docker 运行 Gitleaks 检查是否存在敏感信息..."
+# 获取 Gitleaks 版本号
+echo "正在从 .env 中获取 Gitleaks 的版本号..."
+if [ -f .env ]; then
+    GITLEAKS_VERSION=$(grep "^GITLEAKS_VERSION" .env | cut -d '=' -f2 | tr -d ' \r')
+fi
+
+if [ -z "$GITLEAKS_VERSION" ]; then
+    echo "❌ 无法读取 Gitleaks 版本"
+    exit 1
+else
+    # 确保加上 v 前缀，Docker tag 格式通常是 v8.30.0
+    GITLEAKS_VERSION="v${GITLEAKS_VERSION}"
+fi
+
+echo "🛡️ 正在使用 Docker 运行 Gitleaks ${GITLEAKS_VERSION} 检查是否存在敏感信息..."
 
 # Windows 下的特殊处理：
 # 1. 使用 MSYS_NO_PATHCONV=1 防止 Git Bash 自动转换路径导致 Docker 挂载失败
@@ -29,7 +44,7 @@ echo "🛡️ 正在使用 Docker 运行 Gitleaks 检查是否存在敏感信息
 
 MSYS_NO_PATHCONV=1 docker run --rm \
   -v "$(pwd):/code" \
-  zricethezav/gitleaks:latest \
+  zricethezav/gitleaks:${GITLEAKS_VERSION} \
   detect \
   --source="/code" \
   --config="/code/gitleaks.toml" \
