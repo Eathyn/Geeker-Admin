@@ -43,4 +43,5 @@ const assemblySize = computed(() => globalStore.assemblySize);
 const buttonConfig = reactive({ autoInsertSpace: false });
 
 console.log('invalid commit message')
+console.log('invalid commit message 2')
 </script>
