@@ -27,6 +27,7 @@
     "build:dev": "vue-tsc && pnpm run build:dev:only",
     "build:test": "vue-tsc && pnpm run build:test:only",
     "build:pro": "vue-tsc && pnpm run build:pro:only",
+    "build:verify": "node scripts/verify-build.js",
     "type:check": "vue-tsc --noEmit --skipLibCheck --pretty",
     "preview": "pnpm build:dev && vite preview",
     "lint:eslint": "eslint --fix --ext .js,.ts,.vue ./src",

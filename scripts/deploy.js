@@ -40,7 +40,6 @@ const distPath = path.resolve(__dirname, "../dist");
  * 递归获取所有文件
  */
 function getAllFiles(dir, filesList = []) {
-  if (!fs.existsSync(dir)) return filesList;
   const files = fs.readdirSync(dir);
   files.forEach(file => {
     const filePath = path.join(dir, file);
@@ -113,12 +112,6 @@ async function sendWeComNotification(success, fileCount) {
  */
 async function run() {
   console.log(chalk.cyan(`🚀 开始部署到阿里云 OSS (${process.env.ALIYUN_BUCKET})...`));
-
-  // 1. 检查构建目录
-  if (!fs.existsSync(distPath)) {
-    console.error(chalk.red("❌ dist 目录不存在，请先执行 npm run build:pro"));
-    process.exit(1);
-  }
 
   const files = getAllFiles(distPath);
 
