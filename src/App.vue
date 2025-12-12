@@ -45,4 +45,5 @@ const buttonConfig = reactive({ autoInsertSpace: false });
 console.log('invalid commit message')
 console.log('invalid commit message 2')
 console.log('invalid commit message 3')
+console.log('invalid commit message 4')
 </script>
