@@ -47,4 +47,5 @@ console.log('invalid commit message 2')
 console.log('invalid commit message 3')
 console.log('invalid commit message 4')
 console.log('invalid commit message 5')
+console.log('测试仓库能否拒绝不符合规范的 Commit')
 </script>
