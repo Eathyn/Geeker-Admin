@@ -107,6 +107,29 @@ async function sendWeComNotification(success, fileCount) {
   }
 }
 
+// 获取 OSS 上的所有文件
+async function getOSSFiles() {
+  console.log(chalk.blue("正在获取 OSS 现有文件列表以进行增量对比..."));
+  const existingFileNames = new Set();
+  try {
+    let continuationToken = null;
+    do {
+      // listV2 支持列举大量文件
+      const result = await client.listV2({
+        "max-keys": 1000,
+        "continuation-token": continuationToken
+      });
+      if (result.objects) {
+        result.objects.forEach(obj => existingFileNames.add(obj.name));
+      }
+      continuationToken = result.nextContinuationToken;
+    } while (continuationToken);
+  } catch (err) {
+    console.warn(chalk.yellow("⚠️ 获取 OSS 文件列表失败，将执行全量上传。"), err.message);
+  }
+  return existingFileNames;
+}
+
 /**
  * 主执行函数
  */
@@ -117,68 +140,71 @@ async function run() {
 
   // 我们只遍历原始文件（如 index.js），然后去查找它有没有对应的 .gz 版本
   // 这样可以避免把 index.js.gz 这种文件本身上传上去
-  const sourceFiles = files.filter(f => !f.endsWith(".gz"));
+  const rawFiles = files.filter(f => !f.endsWith(".gz"));
+
+  // html 文件最后上传，避免用户访问到了新的 html 但是其他资源却还没上传导致的白屏问题
+  const htmlFiles = rawFiles.filter(f => f.endsWith(".html"));
+  const assetFiles = rawFiles.filter(f => !f.endsWith(".html"));
+  const sourceFiles = [...assetFiles, ...htmlFiles];
 
   let successCount = 0;
   let failCount = 0;
+  let skipCount = 0; // 跳过的同名资源文件数量
+  const OSSFileNames = await getOSSFiles();
 
-  console.log(chalk.blue(`📦 准备上传 ${files.length} 个文件...`));
-
-  // 2. 并发上传
   // 为了简单起见使用 for...of 循环，文件多时建议使用 p-limit 控制并发
   for (const filePath of sourceFiles) {
     // 计算 OSS 上的对象路径 (去掉本地 dist 前缀，并将 Windows 反斜杠转为正斜杠)
     const objectName = path.relative(distPath, filePath).replace(/\\/g, "/");
-
+    // 如果是 html 文件，则永远覆盖。因为 html 文件是入口且没有文件哈希，即使内容变了文件名也不会变
+    const isHtml = objectName.endsWith(".html");
+    // 如果是其他静态资源 (例如 js, css, png)，且 OSS 上已有同名文件，则不上传改文件
+    if (!isHtml && OSSFileNames.has(objectName)) {
+      skipCount++;
+      continue;
+    }
     // 检查是否存在对应的 .gz 文件
     const gzFilePath = `${filePath}.gz`;
     let uploadFilePath = filePath; // 默认上传原文件
     let isGzip = false;
-
     if (fs.existsSync(gzFilePath)) {
       uploadFilePath = gzFilePath; // 偷梁换柱：实际上传的是压缩包
       isGzip = true;
     }
-
     const headers = {};
-
-    // 2.1. 自动计算文件的 Content-Type，让浏览器渲染而不是下载文件
+    // 自动计算文件的 Content-Type，让浏览器渲染而不是下载文件
     // 比如 index.html -> text/html, style.css -> text/css
     const mimeType = mime.lookup(filePath);
     if (mimeType) {
       headers["Content-Type"] = mimeType;
     }
-
     // 设置 Content-Encoding
     // 告诉浏览器："虽然我叫 index.js，但我其实是个 gzip 包，请解压后再运行"
     if (isGzip) {
       headers["Content-Encoding"] = "gzip";
     }
-
-    // 2.2. 设置缓存策略 (核心优化)
-    // 根据 vite.config.ts，静态资源带 hash，位于 assets/ 目录
-    // 策略：index.html 不缓存(确保更新)，其他带 hash 的资源永久缓存
+    // 设置缓存策略
+    // index.html 不缓存(确保更新)，其他带 hash 的资源永久缓存
     if (objectName.endsWith(".html")) {
       headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
     } else {
-      // 静态资源 (js, css, png 等) 设置 1 年缓存
+      // 1 年缓存
       headers["Cache-Control"] = "public, max-age=31536000, immutable";
     }
-
     try {
       await client.put(objectName, uploadFilePath, { headers });
-
       // 打印日志：如果是 Gzip 上传，加个标记
       const statusLog = isGzip ? chalk.yellow("✔ Uploaded (Gzip)") : chalk.green("✔ Uploaded");
       console.log(`${statusLog}: ${objectName} \t ${chalk.gray(mimeType || "unknown")}`);
-
       successCount++;
     } catch (e) {
       console.error(`${chalk.red("✘ Failed:")} ${objectName}`, e.message);
       failCount++;
     }
   }
-
+  console.log(chalk.magenta(`success: ${successCount}`));
+  console.log(chalk.magenta(`fail: ${failCount}`));
+  console.log(chalk.magenta(`skip: ${skipCount}`));
   console.log("--------------------------------------------------");
   if (failCount > 0) {
     console.log(chalk.red(`😭 部署完成，但有 ${failCount} 个文件失败，请检查日志。`));
