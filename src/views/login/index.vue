@@ -2,6 +2,7 @@
   <div class="login-container flx-center">
     <div class="login-box">
       <div>feat-1</div>
+      <div>release-1</div>
       <SwitchDark class="dark" />
       <div class="login-left">
         <img class="login-left-img" src="@/assets/images/login_left.png" alt="login" />
