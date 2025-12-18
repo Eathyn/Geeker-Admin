@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import chalk from "chalk"; // 用于终端颜色输出，如果没安装可换成 console.log
 import mime from "mime-types";
 import axios from "axios";
+import Core from "@alicloud/pop-core";
 
 // 1. 初始化环境配置
 // 为了在本地测试时能读取 .env 文件（CI/CD 环境中通常直接读取系统变量）
@@ -15,7 +16,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
 // 2. 检查必要的配置是否存在
-const REQUIRED_KEYS = ["ALIYUN_ACCESS_KEY_ID", "ALIYUN_ACCESS_KEY_SECRET", "ALIYUN_BUCKET", "ALIYUN_REGION"];
+const REQUIRED_KEYS = ["ALIYUN_ACCESS_KEY_ID", "ALIYUN_ACCESS_KEY_SECRET", "ALIYUN_BUCKET", "ALIYUN_REGION", "DOMAIN"];
 const missingKeys = REQUIRED_KEYS.filter(key => !process.env[key]);
 
 if (missingKeys.length > 0) {
@@ -216,4 +217,40 @@ async function run() {
   }
 }
 
-run();
+// 已将 CDN 配置为 index.html 的缓存时间设置为 0 并且开启了强制内容重新验证：
+//  1. 浏览器请求 index.html。
+//  2. CDN 节点收到请求，发现配置是“缓存 0 秒”。
+//  3. CDN 节点每次都会去 OSS 问一下：“文件改了吗？”（通过 ETag 对比）。
+//  4. 因为你刚部署了新版，OSS 说：“改了，这是新的。”
+//  5. CDN 拿到新版返回给你。
+// refreshCDN 的作用：
+//  - 万一某天你（或者你的同事）为了节省回源流量费用，或者手滑，把 index.html 的缓存时间改成了 10 分钟或 1 小时。如果没有这个刷新脚本，用户在部署后的一小时内看到的都是旧页面。保留脚本可以作为一道保险，确保无论 CDN 后台怎么配，部署后一定强制更新。
+//  - 虽然 TTL=0 理论上是实时的，但在极少数网络抖动或节点同步延迟的情况下，CDN 的某些边缘节点可能会有短暂的滞后。调用“刷新缓存”接口是阿里云提供的最高优先级的强制清除指令，能保证全网节点瞬间清除旧数据。
+//  - 除了 index.html，万一你的项目中还有其他不带 Hash 值的静态文件（比如 public/config.json，或者固定的图片 logo.png），如果你替换了它们，文件名没变，CDN 可能会缓存很久。这时候 refreshCDN 就是必须的。
+async function refreshCDN() {
+  const client = new Core({
+    accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID,
+    accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET,
+    endpoint: "https://cdn.aliyuncs.com",
+    apiVersion: "2018-05-10"
+  });
+  try {
+    const domain = process.env.DOMAIN;
+    // const domain = "http://test1.466430.xyz";
+    // 同时刷新 / 和 /index.html
+    const pathsToRefresh = [
+      `${domain}/`, // 对应用户访问的根路径
+      `${domain}/index.html` // 对应实际文件路径
+    ].join("\n"); // 阿里云 API 支持换行符分隔多个 URL
+    await client.request("RefreshObjectCaches", {
+      ObjectPath: pathsToRefresh,
+      ObjectType: "File" // 根路径 / 在阿里云CDN刷新中通常也被视为 File 类型刷新
+    });
+    console.log("✅ CDN 刷新成功: 根目录 & index.html");
+  } catch (e) {
+    console.error("❌ CDN 刷新失败", e);
+  }
+}
+
+await run();
+await refreshCDN();
