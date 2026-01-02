@@ -60,7 +60,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
-    "qs": "^6.12.1",
+    "qs": "^6.14.1",
     "screenfull": "^6.0.2",
     "sortablejs": "^1.15.2",
     "vue": "^3.4.31",
@@ -73,7 +73,7 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@types/md5": "^2.3.5",
     "@types/nprogress": "^0.2.3",
-    "@types/qs": "^6.9.15",
+    "@types/qs": "^6.14.0",
     "@types/sortablejs": "^1.15.8",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.14.1",
@@ -135,6 +135,9 @@
   },
   "packageManager": "pnpm@10.24.0",
   "pnpm": {
+    "overrides": {
+      "qs": "^6.14.1"
+    },
     "auditConfig": {
       "ignoreCves": [
         "CVE-2024-4068"
