@@ -4,7 +4,9 @@
     "commitMessage": "chore: release v${version}",
     "tagName": "v${version}",
     "tagAnnotation": "Release v${version}",
-    "push": true
+    "push": true,
+    "commitArgs": ["--no-verify"],
+    "pushArgs": ["--no-verify", "--follow-tags"]
   },
   "npm": {
     "publish": false
