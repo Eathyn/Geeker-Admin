@@ -1,0 +1,42 @@
+{
+  "git": {
+    "requireBranch": "master",
+    "commitMessage": "chore: release v${version}",
+    "tagName": "v${version}",
+    "tagAnnotation": "Release v${version}",
+    "push": true
+  },
+  "npm": {
+    "publish": false
+  },
+  "github": {
+    "release": false
+  },
+  "gitlab": {
+    "release": false
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          { "type": "feat", "section": "🚀 Features | 新功能" },
+          { "type": "fix", "section": "🧩 Bug Fixes | Bug 修复" },
+          { "type": "perf", "section": "⚡️ Performance Improvements | 性能优化" },
+          { "type": "revert", "section": "⏪️ Reverts | 回退" },
+          { "type": "docs", "section": "📚 Documentation | 文档" },
+          { "type": "style", "section": "🎨 Styles | 代码风格" },
+          { "type": "refactor", "section": "♻️ Code Refactoring | 代码重构" },
+          { "type": "test", "section": "✅ Tests | 测试" },
+          { "type": "build", "section": "📦️ Build System | 构建" },
+          { "type": "ci", "section": "🎡 Continuous Integration | CI 配置" },
+          { "type": "workflow", "section": "📋 Workflow | 工作流" },
+          { "type": "type", "section": "🔰 Types | 类型定义" },
+          { "type": "chore", "section": "🔨 Chores | 其他杂项", "hidden": false },
+          { "type": "wip", "section": "🕔 WIP | 正在开发中", "hidden": true }
+        ]
+      }
+    }
+  }
+}
