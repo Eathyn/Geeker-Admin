@@ -120,19 +120,10 @@
     "vite-plugin-vue-devtools": "^7.3.5",
     "vue-tsc": "^2.0.22"
   },
-  "devEngines": {
-    "runtime": {
-      "name": "node",
-      "onFail": "error"
-    },
-    "packageManager": {
-      "name": "pnpm",
-      "version": "10.24.0",
-      "onFail": "error"
-    }
-  },
   "engines": {
     "node": "24.11.1",
+    "npm": "🚫 请使用 pnpm 包管理器",
+    "yarn": "🚫 请使用 pnpm 包管理器",
     "pnpm": "10.24.0"
   },
   "packageManager": "pnpm@10.24.0",
