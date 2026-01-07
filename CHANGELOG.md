@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.1](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v2.0.1-rc.2...v1.2.1) (2026-01-07)
+
+### 🧩 Bug Fixes | Bug 修复
+
+* 🧩 项目规定只能使用 pnpm，而 release-it 默认使用 npm，让 release-it 也使用 pnpm ([91e4ed4](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/91e4ed45d8854af8e8a3653e3975677cef14e7cc))
+* 🧩 修改限制包管理器（只能用 pnpm）的方式 ([d651206](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/d651206ca1aa4185e6e68f97432948828f8a04b1))
+* 🧩 release-it 代替 standard-version，CI 运行 release-it 时上跳过 pre-commit 和 pre-push ([48e89b8](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/48e89b8bcd91f2b99fe4b37ca115bc8bf30bffb3))
+
+### 📦️ Build System | 构建
+
+* **cd:** 📦️ 强制刷新 CDN 上的资源，避免访问到旧资源 ([3de594c](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/3de594cf887ea91aef3aaeb4f5bbc74e02b794c5))
+* **package:** 📦️ qs 出现高危漏洞，需要升级版本 ([09a95ed](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/09a95edc30c7fad70ac09edaa883ffcfc8a4cd94))
+
+### 🎡 Continuous Integration | CI 配置
+
+* 🎡 CI 上运行 release-it 自动修改版本号和增加 tag ([9b393b7](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/9b393b76df366153f5bf791b5dcc28a13dc360e3))
+
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 ## [1.2.0](https://github.com/HalseySpicy/Geeker-Admin/compare/v1.1.0...v1.2.0) (2023-09-15)
