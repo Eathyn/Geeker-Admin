@@ -8,9 +8,7 @@
     "commitArgs": ["--no-verify"],
     "pushArgs": ["--no-verify", "--follow-tags"]
   },
-  "npm": {
-    "publish": false
-  },
+  "npm": false,
   "github": {
     "release": false
   },
@@ -40,5 +38,8 @@
         ]
       }
     }
+  },
+  "hooks": {
+    "after:bump": "pnpm version ${version} --no-git-tag-version --allow-same-version"
   }
 }
