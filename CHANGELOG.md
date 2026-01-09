@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.3](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.2...v1.2.3) (2026-01-09)
+
+### 🧩 Bug Fixes | Bug 修复
+
+* 🧩 preact 出现高危漏洞 ([898e662](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/898e6629f88a180675229fff66b6bb77888f3db3))
+
 ## [1.2.2](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.1...v1.2.2) (2026-01-07)
 
 ## [1.2.1](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v2.0.1-rc.2...v1.2.1) (2026-01-07)
