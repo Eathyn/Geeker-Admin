@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.7](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.6...v1.2.7) (2026-01-09)
+
+### 🧩 Bug Fixes | Bug 修复
+
+* 🧩 测试回滚方案 ([82aa5bf](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/82aa5bf5d7452e5542c9370950ef4cec1f7a6aa3))
+
 ## [1.2.6](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.5...v1.2.6) (2026-01-09)
 
 ## [1.2.5](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.4...v1.2.5) (2026-01-09)
