@@ -1,7 +1,7 @@
 {
   "name": "geeker-admin",
   "private": true,
-  "version": "1.2.3",
+  "version": "1.2.4",
   "type": "module",
   "description": "geeker-admin open source management system",
   "author": {
