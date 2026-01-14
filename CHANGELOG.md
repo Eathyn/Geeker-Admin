@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.9](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.8...v1.2.9) (2026-01-14)
+
+### 🧩 Bug Fixes | Bug 修复
+
+* 🧩 pre-push 增加 commitlint ([ead3cce](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/ead3cceb436a40d8fcc3cdd2ecf06965dada46d1))
+
 ## [1.2.8](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.7...v1.2.8) (2026-01-09)
 
 ### 🧩 Bug Fixes | Bug 修复
