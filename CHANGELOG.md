@@ -1,5 +1,7 @@
 # Changelog
 
+## [1.2.10](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.9...v1.2.10) (2026-01-14)
+
 ## [1.2.9](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.8...v1.2.9) (2026-01-14)
 
 ### 🧩 Bug Fixes | Bug 修复
