@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.12](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.11...v1.2.12) (2026-01-14)
+
+### 🧩 Bug Fixes | Bug 修复
+
+* 🧩 Git 浅克隆导致断层 ([1b17b8e](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/1b17b8e6689d2eebd40224be7c41a1690be674f6))
+
 ## [1.2.11](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.10...v1.2.11) (2026-01-14)
 
 ## [1.2.10](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.9...v1.2.10) (2026-01-14)
