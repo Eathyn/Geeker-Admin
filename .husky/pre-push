@@ -1,4 +1,11 @@
-# 1. 安全检查 (使用官方源以避免报错)
+# Commit 信息检查
+# 获取远程最新的 master 指针
+git fetch origin master --depth=1
+# --from origin/master: 检查当前分支相比于远程 master 分支新增的 commit 的信息
+# --git-log-args "--no-merges": 忽略合并的 commit 的信息，即该 commit 有两个或两个以上的父节点时忽略。不是以 "Merge" 开头的 commit 就忽略
+pnpm exec commitlint --from origin/master --verbose
+
+# 安全检查 (使用官方源以避免报错)
 echo "🛡️ 正在执行依赖包的安全性检查..."
 pnpm audit --audit-level high --registry=https://registry.npmjs.org
 
@@ -8,7 +15,7 @@ if [ $? -ne 0 ]; then
  exit 1
 fi
 
-# 2. TypeScript 类型检查
+# TypeScript 类型检查
 echo "正在执行 TypeScript 类型检查..."
 pnpm run type:check
 
