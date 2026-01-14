@@ -1,6 +1,6 @@
 # Commit 信息检查
 # 获取远程最新的 master 指针
-git fetch origin master --depth=1
+git fetch origin master
 # --from origin/master: 检查当前分支相比于远程 master 分支新增的 commit 的信息
 # --git-log-args "--no-merges": 忽略合并的 commit 的信息，即该 commit 有两个或两个以上的父节点时忽略。不是以 "Merge" 开头的 commit 就忽略
 pnpm exec commitlint --from origin/master --verbose
