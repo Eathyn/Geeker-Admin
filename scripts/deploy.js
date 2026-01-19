@@ -9,19 +9,19 @@ import mime from "mime-types";
 import axios from "axios";
 import Core from "@alicloud/pop-core";
 
-// 1. 初始化环境配置
-// 为了在本地测试时能读取 .env 文件（CI/CD 环境中通常直接读取系统变量）
+// 初始化环境配置
+// 为了在本地测试时能读取 .env 文件（流水线中直接读取系统变量）
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
-// 2. 检查必要的配置是否存在
+// 检查必要的配置是否存在
 const REQUIRED_KEYS = ["ALIYUN_ACCESS_KEY_ID", "ALIYUN_ACCESS_KEY_SECRET", "ALIYUN_BUCKET", "ALIYUN_REGION", "DOMAIN"];
 const missingKeys = REQUIRED_KEYS.filter(key => !process.env[key]);
 
 if (missingKeys.length > 0) {
   console.error(chalk.red(`❌ 缺少环境变量: ${missingKeys.join(", ")}`));
-  console.log(chalk.yellow("提示: 请在项目根目录创建 .env.local 文件或在 CI/CD 变量中配置。"));
+  console.log(chalk.yellow("提示: 本地运行需要在 .env.local 中增加环境变量；流水线运行需要在流水线增加环境变量"));
   process.exit(1);
 }
 
@@ -37,9 +37,7 @@ const client = new OSS({
 // 构建目录路径 (根据 vite.config.ts 的 outDir: "dist")
 const distPath = path.resolve(__dirname, "../dist");
 
-/**
- * 递归获取所有文件
- */
+// 递归获取所有文件
 function getAllFiles(dir, filesList = []) {
   const files = fs.readdirSync(dir);
   files.forEach(file => {
@@ -54,9 +52,23 @@ function getAllFiles(dir, filesList = []) {
   return filesList;
 }
 
-/**
- * 企业微信群机器人通知
- * */
+// 并发控制
+async function pMap(items, mapper, concurrency = 10) {
+  const results = [];
+  const executing = [];
+  for (const item of items) {
+    const p = Promise.resolve().then(() => mapper(item));
+    results.push(p);
+    const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+    executing.push(e);
+    if (executing.length >= concurrency) {
+      await Promise.race(executing);
+    }
+  }
+  return Promise.all(results);
+}
+
+// 企业微信群机器人通知
 async function sendWeComNotification(success, fileCount) {
   // webhook 在企业微信群内生成，可以把它放在 .env.local 里，并把它添加到云效流水线
   const webhookUrl = process.env.WECOM_WEBHOOK;
@@ -108,112 +120,59 @@ async function sendWeComNotification(success, fileCount) {
   }
 }
 
-// 获取 OSS 上的所有文件
-async function getOSSFiles() {
-  console.log(chalk.blue("正在获取 OSS 现有文件列表以进行增量对比..."));
-  const existingFileNames = new Set();
-  try {
-    let continuationToken = null;
-    do {
-      // listV2 支持列举大量文件
-      const result = await client.listV2({
-        "max-keys": 1000,
-        "continuation-token": continuationToken
-      });
-      if (result.objects) {
-        result.objects.forEach(obj => existingFileNames.add(obj.name));
-      }
-      continuationToken = result.nextContinuationToken;
-    } while (continuationToken);
-  } catch (err) {
-    console.warn(chalk.yellow("⚠️ 获取 OSS 文件列表失败，将执行全量上传。"), err.message);
-  }
-  return existingFileNames;
-}
-
-/**
- * 主执行函数
- */
+// 主执行函数
 async function run() {
   console.log(chalk.cyan(`🚀 开始部署到阿里云 OSS (${process.env.ALIYUN_BUCKET})...`));
-
-  const files = getAllFiles(distPath);
-
-  // 我们只遍历原始文件（如 index.js），然后去查找它有没有对应的 .gz 版本
-  // 这样可以避免把 index.js.gz 这种文件本身上传上去
-  const rawFiles = files.filter(f => !f.endsWith(".gz"));
-
+  // 获取 dist 目录的所有文件
+  const allFiles = getAllFiles(distPath);
   // html 文件最后上传，避免用户访问到了新的 html 但是其他资源却还没上传导致的白屏问题
-  const htmlFiles = rawFiles.filter(f => f.endsWith(".html"));
-  const assetFiles = rawFiles.filter(f => !f.endsWith(".html"));
-  const sourceFiles = [...assetFiles, ...htmlFiles];
-
+  const htmlFiles = allFiles.filter(f => f.endsWith(".html"));
+  const staticFiles = allFiles.filter(f => !f.endsWith(".html"));
+  // 上传成功和失败的数量
   let successCount = 0;
   let failCount = 0;
-  let skipCount = 0; // 跳过的同名资源文件数量
-  const OSSFileNames = await getOSSFiles();
-
-  // 为了简单起见使用 for...of 循环，文件多时建议使用 p-limit 控制并发
-  for (const filePath of sourceFiles) {
+  // 单文件上传逻辑
+  const uploadHandler = async filePath => {
     // 计算 OSS 上的对象路径 (去掉本地 dist 前缀，并将 Windows 反斜杠转为正斜杠)
     const objectName = path.relative(distPath, filePath).replace(/\\/g, "/");
-    // 如果是 html 文件，则永远覆盖。因为 html 文件是入口且没有文件哈希，即使内容变了文件名也不会变
-    const isHtml = objectName.endsWith(".html");
-    // 如果是其他静态资源 (例如 js, css, png)，且 OSS 上已有同名文件，则不上传改文件
-    if (!isHtml && OSSFileNames.has(objectName)) {
-      skipCount++;
-      continue;
-    }
-    // 检查是否存在对应的 .gz 文件
-    const gzFilePath = `${filePath}.gz`;
-    let uploadFilePath = filePath; // 默认上传原文件
-    let isGzip = false;
-    if (fs.existsSync(gzFilePath)) {
-      uploadFilePath = gzFilePath; // 偷梁换柱：实际上传的是压缩包
-      isGzip = true;
-    }
+    // 自动计算文件的 Content-Type，让浏览器渲染而不是下载文件，例如 index.html -> text/html, style.css -> text/css
     const headers = {};
-    // 自动计算文件的 Content-Type，让浏览器渲染而不是下载文件
-    // 比如 index.html -> text/html, style.css -> text/css
     const mimeType = mime.lookup(filePath);
     if (mimeType) {
       headers["Content-Type"] = mimeType;
     }
-    // 设置 Content-Encoding
-    // 告诉浏览器："虽然我叫 index.js，但我其实是个 gzip 包，请解压后再运行"
-    if (isGzip) {
-      headers["Content-Encoding"] = "gzip";
-    }
-    // 设置缓存策略
-    // index.html 不缓存(确保更新)，其他带 hash 的资源永久缓存
-    if (objectName.endsWith(".html")) {
-      headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-    } else {
-      // 1 年缓存
-      headers["Cache-Control"] = "public, max-age=31536000, immutable";
-    }
+    // 设置缓存策略。index.html 不缓存，其他资源强制缓存 1 年
+    headers["Cache-Control"] = objectName.endsWith(".html")
+      ? "no-cache, no-store, must-revalidate"
+      : "public, max-age=31536000, immutable";
     try {
-      await client.put(objectName, uploadFilePath, { headers });
-      // 打印日志：如果是 Gzip 上传，加个标记
-      const statusLog = isGzip ? chalk.yellow("✔ Uploaded (Gzip)") : chalk.green("✔ Uploaded");
-      console.log(`${statusLog}: ${objectName} \t ${chalk.gray(mimeType || "unknown")}`);
+      // 上传文件
+      await client.put(objectName, filePath, { headers });
+      console.log(`${chalk.green("✔ Uploaded")}: ${objectName}`);
       successCount++;
     } catch (e) {
-      console.error(`${chalk.red("✘ Failed:")} ${objectName}`, e.message);
+      console.error(`${chalk.red("✘ Failed")}: ${objectName} - ${e.message}`);
       failCount++;
+      // 抛出错误以便后续判断是否终止
+      throw e;
     }
-  }
-  console.log(chalk.magenta(`success: ${successCount}`));
-  console.log(chalk.magenta(`fail: ${failCount}`));
-  console.log(chalk.magenta(`skip: ${skipCount}`));
-  console.log("--------------------------------------------------");
-  if (failCount > 0) {
-    console.log(chalk.red(`😭 部署完成，但有 ${failCount} 个文件失败，请检查日志。`));
-    await sendWeComNotification(false, 0);
-    process.exit(1);
-  } else {
+  };
+
+  try {
+    // 并发上传静态资源
+    console.log(chalk.blue(`\n📦 正在并发上传静态资源 (${staticFiles.length} 个)...`));
+    await pMap(staticFiles, uploadHandler, 50);
+    // 最后上传 HTML，防止引用不存在的资源
+    console.log(chalk.blue(`\n📄 正在上传入口文件 (${htmlFiles.length} 个)...`));
+    await pMap(htmlFiles, uploadHandler);
+    console.log("-".repeat(50));
     console.log(chalk.green(`🎉 部署成功！共上传 ${successCount} 个文件。`));
     await sendWeComNotification(true, successCount);
+  } catch (error) {
+    console.log("-".repeat(50));
+    console.log(chalk.red(`😭 部署过程出错 (成功: ${successCount}, 失败: ${failCount})`));
+    await sendWeComNotification(false, successCount);
+    process.exit(1);
   }
 }
 
