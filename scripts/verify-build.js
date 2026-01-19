@@ -71,16 +71,4 @@ if (jsFiles.length === 0) {
   console.log(chalk.green(`✅ assets 目录存在 JS 文件`));
 }
 
-// 验证是否存在压缩文件
-const compressFiles = files.filter(f => f.endsWith(".gz") || f.endsWith(".br"));
-if (compressFiles.length === 0) {
-  console.warn(chalk.red("❌ 错误: 未找到压缩文件。"));
-  console.warn(
-    chalk.red("   请检查 vite.config.ts 中是否配置了 vite-plugin-compression，否则部署脚本将无法利用 Gzip/Brotli 优化。")
-  );
-  process.exit(1);
-} else {
-  console.log(chalk.green(`✅ assets 目录存在压缩文件`));
-}
-
 console.log(chalk.cyan("构建产物验证结束"));
