@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.12...v1.3.0) (2026-01-19)
+
+### 🚀 Features | 新功能
+
+* 🚀 简化部署脚本 ([be860d7](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/be860d779840774cc9e300f6286708ee91a6e3bf))
+
 ## [1.2.12](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.11...v1.2.12) (2026-01-14)
 
 ### 🧩 Bug Fixes | Bug 修复
