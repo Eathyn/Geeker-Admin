@@ -1,9 +1,14 @@
 # Commit 信息检查
+# pre-push 钩子脚本在执行时，Git 会自动将远程仓库的名称作为第一个参数（$1）传入
+remote_name="$1"
+if [ -z "$remote_name" ]; then
+ echo "❌ 没有获取到远程仓库名"
+ exit 1
+fi
 # 获取远程最新的 master 指针
-git fetch origin master
-# --from origin/master: 检查当前分支相比于远程 master 分支新增的 commit 的信息
-# --git-log-args "--no-merges": 忽略合并的 commit 的信息，即该 commit 有两个或两个以上的父节点时忽略。不是以 "Merge" 开头的 commit 就忽略
-pnpm exec commitlint --from origin/master --verbose
+git fetch "$remote_name" master
+# --from remote_name/master: 检查当前分支相比于远程 master 分支新增的 commit 的信息
+pnpm exec commitlint --from "${remote_name}/master" --verbose
 
 # 安全检查 (使用官方源以避免报错)
 echo "🛡️ 正在执行依赖包的安全性检查..."
@@ -25,4 +30,4 @@ if [ $? -ne 0 ]; then
  exit 1
 fi
 
-echo "✅ 通过所有检查，正在推送到远程仓库..."
+echo "✅ 通过所有检查，正在推送到远程仓库 ${remote_name}..."
