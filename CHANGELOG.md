@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.1](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.4.0...v1.4.1) (2026-01-24)
+
+### 🧩 Bug Fixes | Bug 修复
+
+* 🧩 pre-push 根据不同的远程仓库操作 ([5962903](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/59629036b2b46efefa7dffe30c157973cf484f0b))
+
 ## [1.4.0](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.3.0...v1.4.0) (2026-01-24)
 
 ### 🚀 Features | 新功能
