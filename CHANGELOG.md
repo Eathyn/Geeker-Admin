@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.4.0](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.3.0...v1.4.0) (2026-01-24)
+
+### 🚀 Features | 新功能
+
+* 🚀 改变路由模式 ([3dcefc2](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/3dcefc24239a88939d07949082416d54433b28af))
+
 ## [1.3.0](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.2.12...v1.3.0) (2026-01-19)
 
 ### 🚀 Features | 新功能
