@@ -5,6 +5,35 @@
     <link rel="icon" type="image/svg+xml" href="/vue.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%- title %></title>
+    <script>
+      window.__rum = {
+        endpoint:
+          "https://proj-xtrace-6e4498cf7dbadac3f7ccfcd8e0d50d5-cn-hangzhou.cn-hangzhou.log.aliyuncs.com/rum/web/v2?workspace=default-cms-1519021304584285-cn-hangzhou&service_id=eyg4r4s50d@868f3e0f9ba9156eb9ccd",
+        // 设置环境信息，参考值：'prod' | 'gray' | 'pre' | 'daily' | 'local'
+        env: "prod",
+        // 设置路由模式， 参考值：'history' | 'hash'
+        spaMode: "history",
+        collectors: {
+          // 页面性能指标监听开关，默认开启
+          perf: true,
+          // WebVitals指标监听开关，默认开启
+          webVitals: true,
+          // Ajax监听开关，默认开启
+          api: true,
+          // 静态资源开关，默认开启
+          staticResource: true,
+          // JS错误监听开关，默认开启
+          jsError: true,
+          // 控制台错误监听开关，默认开启
+          consoleError: true,
+          // 用户行为监听开关，默认开启
+          action: true
+        },
+        // 链路追踪配置开关，默认关闭
+        tracing: false
+      };
+    </script>
+    <script type="text/javascript" src="https://sdk.rum.aliyuncs.com/v2/browser-sdk.js" crossorigin></script>
   </head>
   <body>
     <div id="app">
