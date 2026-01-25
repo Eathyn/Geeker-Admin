@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.0](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.4.1...v1.5.0) (2026-01-25)
+
+### 🚀 Features | 新功能
+
+* 🚀 接入监控探针 ([405da39](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/commit/405da395c1824916762bbbcad454f3d98a5418aa))
+
 ## [1.4.1](https://codeup.aliyun.com/692ed17f3b25a962b43abaad/Geeker-Admin/compare/v1.4.0...v1.4.1) (2026-01-24)
 
 ### 🧩 Bug Fixes | Bug 修复
