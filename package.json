@@ -45,7 +45,10 @@
   },
   "dependencies": {
     "@alicloud/pop-core": "^1.8.0",
+    "@arms/rum-vite-plugin": "^0.0.18",
     "@element-plus/icons-vue": "^2.3.1",
+    "@sentry/vite-plugin": "^4.8.0",
+    "@sentry/vue": "^10.37.0",
     "@vueuse/core": "^10.11.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",

@@ -1,4 +1,6 @@
 import { ElNotification } from "element-plus";
+import * as Sentry from "@sentry/vue";
+import { shouldMonitor } from "@/config/monitor";
 
 /**
  * @description 全局代码错误捕捉
@@ -22,6 +24,10 @@ const errorHandler = (error: any) => {
     type: "error",
     duration: 3000
   });
+  if (shouldMonitor()) {
+    // 因为 app.config.errorHandler 捕获了错误，所以需要 Sentry 手动捕获错误，否则 Sentry 服务器收不到错误
+    Sentry.captureException(error);
+  }
 };
 
 export default errorHandler;

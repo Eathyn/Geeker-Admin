@@ -17,9 +17,10 @@
   </div>
 </template>
 
-<script setup lang="ts" name="login">
+<script setup name="login">
 import LoginForm from "./components/LoginForm.vue";
 import SwitchDark from "@/components/SwitchDark/index.vue";
+myUndefinedFunction1();
 </script>
 
 <style scoped lang="scss">

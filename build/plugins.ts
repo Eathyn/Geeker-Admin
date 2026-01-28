@@ -11,13 +11,24 @@ import viteCompression from "vite-plugin-compression";
 import vueSetupExtend from "unplugin-vue-setup-extend-plus/vite";
 import NextDevTools from "vite-plugin-vue-devtools";
 import { codeInspectorPlugin } from "code-inspector-plugin";
+import { rumVitePlugin } from "@arms/rum-vite-plugin";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
+// 为了在本地测试时能读取 .env 文件（流水线中直接读取系统变量）
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
 /**
  * 创建 vite 插件
  * @param viteEnv
  */
 export const createVitePlugins = (viteEnv: ViteEnv): (PluginOption | PluginOption[])[] => {
-  const { VITE_GLOB_APP_TITLE, VITE_REPORT, VITE_DEVTOOLS, VITE_PWA, VITE_CODEINSPECTOR } = viteEnv;
+  const { VITE_GLOB_APP_TITLE, VITE_REPORT, VITE_DEVTOOLS, VITE_PWA, VITE_CODEINSPECTOR, VITE_USER_NODE_ENV } = viteEnv;
+  const isProdBuild = VITE_USER_NODE_ENV === "production";
   return [
     vue(),
     // vue 可以使用 jsx/tsx 语法
@@ -34,7 +45,10 @@ export const createVitePlugins = (viteEnv: ViteEnv): (PluginOption | PluginOptio
     createHtmlPlugin({
       minify: true,
       inject: {
-        data: { title: VITE_GLOB_APP_TITLE }
+        data: {
+          title: VITE_GLOB_APP_TITLE,
+          isProd: VITE_USER_NODE_ENV === "production"
+        }
       }
     }),
     // 使用 svg 图标
@@ -50,6 +64,21 @@ export const createVitePlugins = (viteEnv: ViteEnv): (PluginOption | PluginOptio
     VITE_CODEINSPECTOR &&
       codeInspectorPlugin({
         bundler: "vite"
+      }),
+    // 阿里云 ARMS
+    isProdBuild &&
+      rumVitePlugin({
+        pid: process.env.ARMS_PID,
+        accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID_3,
+        accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET_3,
+        version: "1.5.0"
+      }),
+    // Sentry
+    isProdBuild &&
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: "eathyn",
+        project: "geeker-amdin-prod"
       })
   ];
 };
